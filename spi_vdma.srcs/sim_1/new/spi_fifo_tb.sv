@@ -30,8 +30,8 @@ module spi_fifo_tb();
     end
 
     reg data_o
-    reg read
     reg data_i
+    reg read
     reg write
     reg full
     reg empty
@@ -54,7 +54,11 @@ module spi_fifo_tb();
     ); 
     
     // read data without writing
-    
+    initial begin
+        read <= '0;
+        write <= '0;
+        
+    end
     
     // write byte
     // read byte
