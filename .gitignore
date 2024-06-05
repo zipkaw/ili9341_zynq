@@ -103,3 +103,13 @@
 */*/*/bd/*/ip/*/*.tcl
 hw_handoff
 ipshared
+
+###### for Xilinx Vivado|ISE
+xsim.*
+xvlog.*
+*.cache
+*.sim
+*.runs
+*.hw
+*.backup.*
+*.debug

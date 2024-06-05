@@ -29,8 +29,8 @@ module spi_fifo
 (
     input clk,
     
-    input reg [DATA_WIDTH-1:0] data_o,
-    inout read,
+    output reg [DATA_WIDTH-1:0] data_o,
+    input read,
     
     input [DATA_WIDTH-1:0] data_i,
     input write,
@@ -42,40 +42,41 @@ module spi_fifo
 );
     
     logic [PTR_WITDH-1:0] wr_ptr, rd_ptr;
-    logic [DATA_WIDTH-1:0] memory[DEPTH];
-    reg [PTR_WITDH-1:0] fifo_capacity;
+    logic [DATA_WIDTH-1:0] fifo_buff[DEPTH];
+    integer fifo_capacity;
     
     always_ff @(posedge clk or negedge reset) begin 
-        if(!reset) begin
-            wr_ptr = '0;
-            rd_ptr = '0;
+        if(!reset) begin    
+            wr_ptr <= '0;
+            rd_ptr <= '0;
+            fifo_capacity <= '0;
+            data_o <= '0;
         end else begin
             if (write && !full) begin
-                memory[wr_ptr] = data_i;
-                wr_ptr = wr_ptr + '1;
-                fifo_capacity = fifo_capacity + '1;
+                fifo_buff[wr_ptr] <= data_i;
+                wr_ptr = wr_ptr + 1'b1;
+                fifo_capacity = fifo_capacity + 1'b1;
             end
             if (read && !empty) begin
-                rd_ptr = rd_ptr + '1;
-                fifo_capacity = fifo_capacity - '1; 
+                data_o <= fifo_buff[rd_ptr];
+                rd_ptr = rd_ptr + 1'b1;
+                fifo_capacity = fifo_capacity - 1'b1;
             end
         end
     end
     
     always_comb begin
-        if (read) begin
-            data_o = memory[rd_ptr];
+        if (!reset) begin
+            empty <= '0;
+            full <= '0;
         end
-    end
-    
-    always_comb begin
         if (fifo_capacity == '0) begin
             empty <= '1;
         end 
         else begin
             empty <= '0;
         end
-        if (fifo_capacity == {PTR_WITDH{'1}}) begin
+        if (fifo_capacity == DEPTH) begin
             full <= '1;
         end
         else begin
