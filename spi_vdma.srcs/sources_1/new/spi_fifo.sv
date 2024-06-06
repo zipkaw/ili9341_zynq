@@ -67,7 +67,7 @@ module spi_fifo
     
     always_comb begin
         if (!reset) begin
-            empty <= '0;
+            empty <= '1;
             full <= '0;
         end
         if (fifo_capacity == '0) begin

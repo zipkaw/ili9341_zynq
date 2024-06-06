@@ -37,10 +37,10 @@ module spi
     output reg dcx, // data command selector 9th bit of packet
     
     input      wr,
-    input      data_i[DATA_WIDTH-1:0],
+    input      [DATA_WIDTH-1:0] data_i,
     
     input      rd,
-    output     data_o[DATA_WIDTH-1:0],
+    output     [DATA_WIDTH-1:0] data_o,
     
     input      reset
 );
@@ -69,7 +69,6 @@ module spi
         .read(read),
         .data_i(data_i),
         .write(wr),
-        .full(),
         .empty(empty),
         .reset(reset)
     );
@@ -103,33 +102,37 @@ module spi
     
     // comb out
     always_comb begin
-        case (w_state)
-            IDLE: if(!empty) begin
-                read <= '1;
-            end
-            PRE_WRITE: begin
-                read <= '0;
-                transaction_ready <= '0;
-                transmitted_byte_idx <= PAYLOAD_OFFSET;
-                csx <= tx_fifo_data_o[CSX_OFFSET];
-                dcx <= tx_fifo_data_o[DCX_OFFSET];
-            end
-            WRITE: begin
-                if(transmitted_byte_idx == DATA_WIDTH) begin
-                    transaction_ready <= '1;
+        if(!reset) begin
+            read <= '0;
+            transaction_ready <= '0;
+        end
+        else begin
+            case (w_state)
+                IDLE: if(!empty) begin
+                    read <= '1;
                 end
-            end
-        endcase
+                PRE_WRITE: begin
+                    read <= '0;
+                    transaction_ready <= '0;
+                    transmitted_byte_idx <= PAYLOAD_OFFSET;
+                    csx <= tx_fifo_data_o[CSX_OFFSET];
+                    dcx <= tx_fifo_data_o[DCX_OFFSET];
+                end
+                WRITE: begin
+                    if(transmitted_byte_idx == DATA_WIDTH) begin
+                        transaction_ready <= '1;
+                    end
+                end
+            endcase
+        end
     end
-    
-    specify
-        specparam hold=30ns, setup=30ns;
-        $setup(mosi, posedge scl, setup);
-        $hold(posedge scl, mosi, hold);
-    endspecify
     
     // sequental register out with scl spi clock
     always_ff @(posedge scl) begin
+        if(!reset) begin
+            transmitted_byte_idx <= '0;
+            mosi <= 'hZ;
+        end
         case (w_state)
             PRE_WRITE: begin
                 mosi <= tx_fifo_data_o[transmitted_byte_idx];

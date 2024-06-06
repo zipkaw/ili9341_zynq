@@ -26,6 +26,7 @@ module scl_generator_tb();
     wire scl;
     logic enable;
     time neg_scl, pos_scl;
+    
     always begin
         #5;
         clk = ~clk;
@@ -37,6 +38,12 @@ module scl_generator_tb();
         .scl(scl),
         .enable(enable)
     );
+    
+    specify
+        specparam L_H_W_Delay = 40ns;
+        $width(negedge scl, L_H_W_Delay);
+        $width(posedge scl, L_H_W_Delay);
+    endspecify
     
     initial begin
         neg_scl = $time;

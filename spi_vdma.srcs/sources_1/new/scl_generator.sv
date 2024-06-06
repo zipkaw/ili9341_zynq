@@ -39,12 +39,6 @@ module scl_generator
         end
     end
     
-    specify
-        specparam L_H_W_Delay = 40ns;
-        $width(negedge scl, L_H_W_Delay);
-        $width(posedge scl, L_H_W_Delay);
-    endspecify
-    
     always_comb begin
         if(reset == '0) begin
             scl <= '0;

@@ -32,8 +32,9 @@ module spi_tb
         clk = ~clk;
     end
     
-    logic mosi, scl, csx, dcx, wr, reset;
-    logic [DATA_WIDTH-1:0] data_i, data_o;
+    wire mosi, scl;
+    logic csx, dcx, wr, reset;
+    logic [DATA_WIDTH-1:0] data_i;
 
     spi dut(
         .clk(clk),
@@ -43,14 +44,22 @@ module spi_tb
         .dcx(dsx),
         .wr(wr),
         .data_i(data_i),
-        .data_o(data_o),
         .reset(reset)
     );
     
+    specify
+        specparam hold=30ns, setup=30ns;
+        $setup(mosi, posedge scl, setup);
+        $hold(posedge scl, mosi, hold);
+    endspecify
+    
     initial begin
-        reset = 0;
+        data_i <= '0;
+        wr <= 0;
+        clk <= 0;
+        reset <= 0;
         #50;
-        reset = 1;
+        reset <= 1;
         #50;
     end
     
