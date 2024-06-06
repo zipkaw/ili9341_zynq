@@ -22,24 +22,27 @@ typedef enum {IDLE, PRE_WRITE, WRITE} spi_write_states_t;
 
 module spi
 #(
-    parameter DATA_WIDTH = 9
+    localparam DATA_WIDTH = 10,
+    localparam CSX_OFFSET = 0,
+    localparam DCX_OFFSET = 1,
+    localparam PAYLOAD_OFFSET = 2
 )
 (
-    input clk,
+    input      clk,
     
-    input miso,
+    input      miso,
     output reg mosi,
     output reg scl,
-    output reg csx,
+    output reg csx, // chip select 10th bit of packet
     output reg dcx, // data command selector 9th bit of packet
     
-    input wr,
-    input data_i[DATA_WIDTH-1:0],
+    input      wr,
+    input      data_i[DATA_WIDTH-1:0],
     
-    input rd,
-    output data_o[DATA_WIDTH-1:0],
+    input      rd,
+    output     data_o[DATA_WIDTH-1:0],
     
-    input reset
+    input      reset
 );
 
     logic enable, read, empty; 
@@ -48,6 +51,7 @@ module spi
     logic transaction_ready;
     logic [$clog2(DATA_WIDTH) - 1:0] transmitted_byte_idx;
     
+    logic [DATA_WIDTH-1:0] tx_fifo_data_o;
     
     scl_generator scl_gen(
         .clk(clk),
@@ -57,11 +61,11 @@ module spi
     );
     
     spi_fifo #(
-        .DATA_WIDTH(9),
+        .DATA_WIDTH(DATA_WIDTH),
         .DEPTH(4)
     ) tx_fifo(
         .clk(clk),
-        .data_o(data_o),
+        .data_o(tx_fifo_data_o),
         .read(read),
         .data_i(data_i),
         .write(wr),
@@ -91,7 +95,7 @@ module spi
             PRE_WRITE: begin
                 w_next_state = WRITE;
             end
-            WRITE: if(transaction_ready && !empty) begin
+            WRITE: if(transaction_ready) begin
                 w_next_state = IDLE;
             end
         endcase
@@ -106,16 +110,33 @@ module spi
             PRE_WRITE: begin
                 read <= '0;
                 transaction_ready <= '0;
-                transmitted_byte_idx <= '0;
-                mosi <= data_o[transmitted_byte_idx];
+                transmitted_byte_idx <= PAYLOAD_OFFSET;
+                csx <= tx_fifo_data_o[CSX_OFFSET];
+                dcx <= tx_fifo_data_o[DCX_OFFSET];
             end
             WRITE: begin
-                if(transmitted_byte_idx < DATA_WIDTH) begin
-                    mosi <= data_o[transmitted_byte_idx];
-                    transmitted_byte_idx <= transmitted_byte_idx + 1'b1;
-                end else begin
+                if(transmitted_byte_idx == DATA_WIDTH) begin
                     transaction_ready <= '1;
                 end
+            end
+        endcase
+    end
+    
+    specify
+        specparam hold=30ns, setup=30ns;
+        $setup(mosi, posedge scl, setup);
+        $hold(posedge scl, mosi, hold);
+    endspecify
+    
+    // sequental register out with scl spi clock
+    always_ff @(posedge scl) begin
+        case (w_state)
+            PRE_WRITE: begin
+                mosi <= tx_fifo_data_o[transmitted_byte_idx];
+            end
+            WRITE: begin
+                mosi <= tx_fifo_data_o[transmitted_byte_idx];
+                transmitted_byte_idx <= transmitted_byte_idx + 1'b1;
             end
         endcase
     end

@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 05.06.2024 23:57:10
+// Create Date: 07.06.2024 00:35:29
 // Design Name: 
-// Module Name: scl_generator_tb
+// Module Name: spi_tb
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -19,38 +19,40 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module scl_generator_tb();
-    
+
+module spi_tb
+#(
+    localparam DATA_WIDTH = 10
+)();
+
     logic clk;
-    logic reset;
-    wire scl;
-    logic enable;
-    time neg_scl, pos_scl;
+
     always begin
         #5;
         clk = ~clk;
     end
     
-    scl_generator dut(
+    logic mosi, scl, csx, dcx, wr, reset;
+    logic [DATA_WIDTH-1:0] data_i, data_o;
+
+    spi dut(
         .clk(clk),
-        .reset(reset),
+        .mosi(mosi),
         .scl(scl),
-        .enable(enable)
+        .csx(csx),
+        .dcx(dsx),
+        .wr(wr),
+        .data_i(data_i),
+        .data_o(data_o),
+        .reset(reset)
     );
     
     initial begin
-        neg_scl = $time;
-        pos_scl = $time;
-        clk <= 0;
-        reset <= 0;
-        enable <= 1;
+        reset = 0;
         #50;
-        reset <= 1;
-        enable <= 1;
-        #500;
-        enable <= 0;
-        #200;
-        enable <= 1;
+        reset = 1;
+        #50;
     end
     
+
 endmodule
