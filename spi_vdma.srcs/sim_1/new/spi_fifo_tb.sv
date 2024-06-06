@@ -152,11 +152,5 @@ module spi_fifo_tb();
     .write(write),
     .reset(reset)
     );
-    
 
-    // write n bytes
-    // read m bytes 
-    // write size - n + m bytes, expct full
-    // read all bytex expect empty
-     
 endmodule
