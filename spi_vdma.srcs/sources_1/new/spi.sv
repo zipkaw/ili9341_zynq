@@ -23,9 +23,9 @@ typedef enum {IDLE, PRE_WRITE, WRITE} spi_write_states_t;
 module spi
 #(
     localparam DATA_WIDTH = 10,
-    localparam CSX_OFFSET = 0,
-    localparam DCX_OFFSET = 1,
-    localparam PAYLOAD_OFFSET = 2
+    localparam CSX_OFFSET = DATA_WIDTH - 2,
+    localparam DCX_OFFSET = DATA_WIDTH - 1,
+    localparam PAYLOAD_OFFSET = 0
 )
 (
     input      clk,
@@ -45,18 +45,18 @@ module spi
     input      reset
 );
 
-    logic enable, read, empty; 
+    logic scl_enable, read, empty; 
     spi_write_states_t w_state, w_next_state;
     
     logic transaction_ready;
     logic [$clog2(DATA_WIDTH) - 1:0] transmitted_byte_idx;
     
-    logic [DATA_WIDTH-1:0] tx_fifo_data_o;
+    logic [DATA_WIDTH - 1:0] tx_fifo_data_o;
     
     scl_generator scl_gen(
         .clk(clk),
         .reset(reset),
-        .enable(enable),
+        .enable(scl_enable),
         .scl(scl)
     );
     
@@ -77,6 +77,7 @@ module spi
     always_ff @(posedge clk or negedge reset) begin
         if(!reset) begin
            w_state <= IDLE; 
+           w_next_state <= IDLE;
         end
         else begin
             w_state <= w_next_state;
@@ -90,6 +91,7 @@ module spi
                 w_next_state = PRE_WRITE;
             end else begin
                 w_next_state = IDLE;
+                mosi <= 'hZ;
             end
             PRE_WRITE: begin
                 w_next_state = WRITE;
@@ -105,6 +107,7 @@ module spi
         if(!reset) begin
             read <= '0;
             transaction_ready <= '0;
+            scl_enable <= '0;
         end
         else begin
             case (w_state)
@@ -115,12 +118,16 @@ module spi
                     read <= '0;
                     transaction_ready <= '0;
                     transmitted_byte_idx <= PAYLOAD_OFFSET;
+                    mosi <= tx_fifo_data_o[transmitted_byte_idx];
                     csx <= tx_fifo_data_o[CSX_OFFSET];
                     dcx <= tx_fifo_data_o[DCX_OFFSET];
                 end
                 WRITE: begin
-                    if(transmitted_byte_idx == DATA_WIDTH) begin
+                    if(transmitted_byte_idx[3:0] == CSX_OFFSET) begin
+                        scl_enable <= '0;
                         transaction_ready <= '1;
+                    end else begin
+                        scl_enable <= '1;
                     end
                 end
             endcase
@@ -128,18 +135,15 @@ module spi
     end
     
     // sequental register out with scl spi clock
-    always_ff @(posedge scl) begin
+    always_ff @(negedge scl or negedge reset) begin
         if(!reset) begin
             transmitted_byte_idx <= '0;
             mosi <= 'hZ;
         end
         case (w_state)
-            PRE_WRITE: begin
-                mosi <= tx_fifo_data_o[transmitted_byte_idx];
-            end
             WRITE: begin
-                mosi <= tx_fifo_data_o[transmitted_byte_idx];
-                transmitted_byte_idx <= transmitted_byte_idx + 1'b1;
+                transmitted_byte_idx = transmitted_byte_idx + 1'b1;
+                mosi = tx_fifo_data_o[transmitted_byte_idx];
             end
         endcase
     end

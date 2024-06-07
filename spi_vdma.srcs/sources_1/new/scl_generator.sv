@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module scl_generator
-#(parameter DIV_PARAM = 8)
+#(parameter HALF_PER_DIV_PARAM = 5)
 (
     input clk,
     input reset,
@@ -28,7 +28,7 @@ module scl_generator
     output reg scl
 );
     
-    logic [$clog2(DIV_PARAM) - 1 : 0]counter;
+    logic [$clog2(HALF_PER_DIV_PARAM) - 1 : 0]counter;
     
     always_ff @(posedge clk or negedge reset) begin
         if(reset == '0 || enable == '0) begin
@@ -43,8 +43,9 @@ module scl_generator
         if(reset == '0) begin
             scl <= '0;
         end
-        if(counter == '1 && enable == '1) begin
+        if(counter[$clog2(HALF_PER_DIV_PARAM) - 1 : 0] == HALF_PER_DIV_PARAM && enable == '1) begin
            scl <= scl + 1'b1;
+           counter <= 0;
         end
     end
     

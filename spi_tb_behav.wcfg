@@ -12,26 +12,46 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="277501fs"></ZoomEndTime>
-      <Cursor1Time time="17500fs"></Cursor1Time>
+      <ZoomStartTime time="8334fs"></ZoomStartTime>
+      <ZoomEndTime time="1128335fs"></ZoomEndTime>
+      <Cursor1Time time="195000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="188"></NameColumnWidth>
-      <ValueColumnWidth column_width="85"></ValueColumnWidth>
+      <ValueColumnWidth column_width="80"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="18" />
+   <WVObjectSize size="20" />
    <wvobject fp_name="/spi_tb/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
    </wvobject>
-   <wvobject fp_name="/spi_tb/mosi" type="logic">
-      <obj_property name="ElementShortName">mosi</obj_property>
-      <obj_property name="ObjectShortName">mosi</obj_property>
+   <wvobject fp_name="vbus68" type="vbus">
+      <obj_property name="label">mosi</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/spi_tb/mosi" type="logic">
+         <obj_property name="ElementShortName">mosi</obj_property>
+         <obj_property name="ObjectShortName">mosi</obj_property>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="/spi_tb/scl" type="logic">
       <obj_property name="ElementShortName">scl</obj_property>
       <obj_property name="ObjectShortName">scl</obj_property>
+   </wvobject>
+   <wvobject fp_name="/spi_tb/dut/scl_enable" type="logic">
+      <obj_property name="ElementShortName">scl_enable</obj_property>
+      <obj_property name="ObjectShortName">scl_enable</obj_property>
+   </wvobject>
+   <wvobject fp_name="/spi_tb/dut/w_state" type="array">
+      <obj_property name="ElementShortName">w_state[31:0]</obj_property>
+      <obj_property name="ObjectShortName">w_state[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/spi_tb/dut/transaction_ready" type="logic">
+      <obj_property name="ElementShortName">transaction_ready</obj_property>
+      <obj_property name="ObjectShortName">transaction_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/spi_tb/dut/transmitted_byte_idx" type="array">
+      <obj_property name="ElementShortName">transmitted_byte_idx[3:0]</obj_property>
+      <obj_property name="ObjectShortName">transmitted_byte_idx[3:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/spi_tb/csx" type="logic">
       <obj_property name="ElementShortName">csx</obj_property>
@@ -53,10 +73,6 @@
       <obj_property name="ElementShortName">data_i[9:0]</obj_property>
       <obj_property name="ObjectShortName">data_i[9:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/spi_tb/dsx" type="logic">
-      <obj_property name="ElementShortName">dsx</obj_property>
-      <obj_property name="ObjectShortName">dsx</obj_property>
-   </wvobject>
    <wvobject fp_name="/spi_tb/dut/rd" type="logic">
       <obj_property name="ElementShortName">rd</obj_property>
       <obj_property name="ObjectShortName">rd</obj_property>
@@ -64,10 +80,6 @@
    <wvobject fp_name="/spi_tb/dut/reset" type="logic">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
-   </wvobject>
-   <wvobject fp_name="/spi_tb/dut/enable" type="logic">
-      <obj_property name="ElementShortName">enable</obj_property>
-      <obj_property name="ObjectShortName">enable</obj_property>
    </wvobject>
    <wvobject fp_name="/spi_tb/dut/read" type="logic">
       <obj_property name="ElementShortName">read</obj_property>
@@ -77,20 +89,21 @@
       <obj_property name="ElementShortName">empty</obj_property>
       <obj_property name="ObjectShortName">empty</obj_property>
    </wvobject>
-   <wvobject fp_name="/spi_tb/dut/w_state" type="array">
-      <obj_property name="ElementShortName">w_state[31:0]</obj_property>
-      <obj_property name="ObjectShortName">w_state[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/spi_tb/dut/transaction_ready" type="logic">
-      <obj_property name="ElementShortName">transaction_ready</obj_property>
-      <obj_property name="ObjectShortName">transaction_ready</obj_property>
-   </wvobject>
-   <wvobject fp_name="/spi_tb/dut/transmitted_byte_idx" type="array">
-      <obj_property name="ElementShortName">transmitted_byte_idx[3:0]</obj_property>
-      <obj_property name="ObjectShortName">transmitted_byte_idx[3:0]</obj_property>
-   </wvobject>
    <wvobject fp_name="/spi_tb/dut/tx_fifo_data_o" type="array">
       <obj_property name="ElementShortName">tx_fifo_data_o[9:0]</obj_property>
       <obj_property name="ObjectShortName">tx_fifo_data_o[9:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/spi_tb/dut/tx_fifo/DATA_WIDTH" type="array">
+      <obj_property name="ElementShortName">DATA_WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DATA_WIDTH[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/spi_tb/dut/tx_fifo/full" type="logic">
+      <obj_property name="ElementShortName">full</obj_property>
+      <obj_property name="ObjectShortName">full</obj_property>
+   </wvobject>
+   <wvobject fp_name="/spi_tb/dut/tx_fifo/fifo_buff" type="array">
+      <obj_property name="ElementShortName">fifo_buff[0:3][9:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_buff[0:3][9:0]</obj_property>
    </wvobject>
 </wave_config>

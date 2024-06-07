@@ -41,7 +41,7 @@ module spi_tb
         .mosi(mosi),
         .scl(scl),
         .csx(csx),
-        .dcx(dsx),
+        .dcx(dcx),
         .wr(wr),
         .data_i(data_i),
         .reset(reset)
@@ -61,6 +61,23 @@ module spi_tb
         #50;
         reset <= 1;
         #50;
+        wr <= '1;
+        data_i <= 10'h3da;
+        #10;
+        data_i <= 10'h155;
+        #10;
+        data_i <= 10'h166;
+        #10;
+        wr <= '0;
+        #50;
+        wr <= '1;
+        data_i <= 10'h379;
+        #10;
+        data_i <= 10'h1fe;
+        #10;
+        data_i <= 10'h21c;
+        #10;
+        wr <= '0;
     end
     
 
