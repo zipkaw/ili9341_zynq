@@ -46,8 +46,6 @@ module scl_generator_tb();
     endspecify
     
     initial begin
-        neg_scl = $time;
-        pos_scl = $time;
         clk <= 0;
         reset <= 0;
         enable <= 1;

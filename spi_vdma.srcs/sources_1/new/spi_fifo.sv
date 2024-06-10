@@ -35,8 +35,8 @@ module spi_fifo
     input [DATA_WIDTH-1:0] data_i,
     input write,
     
-    input reg full,
-    input reg empty,
+    output reg full,
+    output reg empty,
     
     input reset
 );

@@ -33,19 +33,13 @@ module scl_generator
     always_ff @(posedge clk or negedge reset) begin
         if(reset == '0 || enable == '0) begin
             counter <= '0;
-        end
-        else if(enable == '1)begin
-            counter <= counter + 1'b1;
-        end
-    end
-    
-    always_comb begin
-        if(reset == '0) begin
             scl <= '0;
         end
-        if(counter[$clog2(HALF_PER_DIV_PARAM) - 1 : 0] == HALF_PER_DIV_PARAM && enable == '1) begin
-           scl <= scl + 1'b1;
-           counter <= 0;
+        else if(enable == '1 && counter[$clog2(HALF_PER_DIV_PARAM) - 1 : 0] < HALF_PER_DIV_PARAM) begin
+            counter <= counter + 1'b1;
+        end else begin
+            scl <= scl + 1'b1;
+            counter <= 0;
         end
     end
     

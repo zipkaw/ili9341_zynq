@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"display_spi": {
+			"proto_instances": {
+			}
+		}
+	}
+}
