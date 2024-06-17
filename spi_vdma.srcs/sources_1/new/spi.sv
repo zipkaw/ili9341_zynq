@@ -1,30 +1,9 @@
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 31.05.2024 11:30:32
-// Design Name: 
-// Module Name: spi
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 typedef enum {IDLE, PRE_WRITE, WRITE_BIT, BIT_TRANSACTION_READY} spi_write_states_t;
 
 module spi
 #(
     parameter  SCL_CLK_HALF_PERIOD =    5,
-    localparam DATA_WIDTH =             10,
-    localparam CSX_OFFSET =             DATA_WIDTH - 2,
+    localparam DATA_WIDTH =             9,
     localparam DCX_OFFSET =             DATA_WIDTH - 1,
     localparam PAYLOAD_OFFSET =         0,
     localparam MOSI_DELAY =             SCL_CLK_HALF_PERIOD*2,
@@ -34,16 +13,16 @@ module spi
     input                               clk,
                 
     input                               miso,
-    output                        mosi,
-    output logic                        scl,
-    output logic                        csx, // chip select 10th bit of packet
-    output logic                        dcx, // data command selector 9th bit of packet
+    output                              mosi, // not used right now
+    output                              scl,
+    output                              csx, // chip select 10th bit of packet
+    output                              dcx, // data command selector 9th bit of packet
     
     input                               wr,
     input [DATA_WIDTH-1:0]              data_i,
     
-    input                               rd,
-    output [DATA_WIDTH-1:0]             data_o,
+    input                               rd, // not used right now
+    output [DATA_WIDTH-1:0]             data_o, // not used right now
     
     input                               reset
 );
@@ -52,7 +31,7 @@ module spi
     
     logic scl_enable, read; 
     logic                        empty;
-    logic [DATA_WIDTH - 1:0]     tx_fifo_data_o, slr; 
+    logic [DATA_WIDTH - 1:0]     tx_fifo_data_o, srr; 
     logic [$clog2(MOSI_BITS_CNT)-1:0]  transmitted_byte_idx;
     logic mosi_bit_was_send;
     shortint setup_count = 0;
@@ -67,9 +46,9 @@ module spi
         .scl(scl)
     );
     
-    spi_fifo #(
+    fifo #(
         .DATA_WIDTH(DATA_WIDTH),
-        .DEPTH(4)
+        .DEPTH(3)
     ) tx_fifo(
         .clk(clk),
         .data_o(tx_fifo_data_o),
@@ -172,14 +151,16 @@ module spi
         endcase
     end
     
-    always_ff @(negedge clk) begin
+    always_ff @(negedge clk) begin : shift_right_register
         if(w_state == PRE_WRITE) begin
-            slr <= tx_fifo_data_o;
+            srr <= tx_fifo_data_o;
         end else if(scl_enable && w_state == WRITE_BIT && hold_count >= MOSI_DELAY-1) begin
-            slr <= {1'b0, slr[DATA_WIDTH - 1:1]};
+            srr <= {1'b0, srr[DATA_WIDTH - 1:1]};
         end
     end
     
-    assign mosi = slr[0];
+    assign {dcx, csx} = {tx_fifo_data_o[DCX_OFFSET], 1'b0};
+
+    assign mosi = srr[0];
     
 endmodule

@@ -1,26 +1,4 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 03.06.2024 23:36:43
-// Design Name: 
-// Module Name: spi_fifo
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
-
-module spi_fifo
+module fifo
 #(
   parameter  DATA_WIDTH = 9, // 8 bits for a data, 1 bit for command/data select 
   parameter  DEPTH     = 16,
