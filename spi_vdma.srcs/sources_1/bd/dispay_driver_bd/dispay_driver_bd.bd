@@ -1,0 +1,308 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0xFAA6568BDAFB5EB6",
+      "device": "xc7z010clg400-1",
+      "name": "dispay_driver_bd",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "None",
+      "tool_version": "2020.1",
+      "validated": "true"
+    },
+    "design_tree": {
+      "display_driver_wrapp_0": "",
+      "spi_wrapper_0": ""
+    },
+    "ports": {
+      "clk": {
+        "type": "clk",
+        "direction": "I",
+        "parameters": {
+          "ASSOCIATED_RESET": {
+            "value": "reset",
+            "value_src": "default"
+          },
+          "CLK_DOMAIN": {
+            "value": "dispay_driver_bd_clk",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "100000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.000",
+            "value_src": "default"
+          }
+        }
+      },
+      "mosi": {
+        "direction": "O"
+      },
+      "scl": {
+        "direction": "O"
+      },
+      "csx": {
+        "direction": "O"
+      },
+      "dcx": {
+        "direction": "O"
+      },
+      "reset": {
+        "type": "rst",
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_LOW",
+            "value_src": "default"
+          }
+        }
+      },
+      "axis_display_pixel": {
+        "direction": "I",
+        "left": "23",
+        "right": "0"
+      },
+      "axis_display_valid": {
+        "direction": "I"
+      },
+      "display_axis_ready": {
+        "direction": "O"
+      },
+      "display_axis_frame_ready": {
+        "direction": "O"
+      }
+    },
+    "components": {
+      "display_driver_wrapp_0": {
+        "vlnv": "xilinx.com:module_ref:display_driver_wrapper:1.0",
+        "xci_name": "dispay_driver_bd_display_driver_wrapp_0_0",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "display_driver_wrapper",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "axis_display_pixel": {
+            "direction": "I",
+            "left": "23",
+            "right": "0"
+          },
+          "axis_display_valid": {
+            "direction": "I"
+          },
+          "axis_display_clk_i": {
+            "direction": "I",
+            "parameters": {
+              "CLK_DOMAIN": {
+                "value": "dispay_driver_bd_clk",
+                "value_src": "default_prop"
+              },
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
+              },
+              "PHASE": {
+                "value": "0.000",
+                "value_src": "default_prop"
+              }
+            }
+          },
+          "display_axis_ready": {
+            "direction": "O"
+          },
+          "display_axis_frame_ready": {
+            "direction": "O"
+          },
+          "spi_display_tx_fifo_empty": {
+            "direction": "I"
+          },
+          "spi_display_tx_fifo_full": {
+            "direction": "I"
+          },
+          "display_spi_write": {
+            "direction": "O"
+          },
+          "display_spi_data": {
+            "direction": "O",
+            "left": "8",
+            "right": "0"
+          },
+          "reset": {
+            "type": "rst",
+            "direction": "I"
+          }
+        }
+      },
+      "spi_wrapper_0": {
+        "vlnv": "xilinx.com:module_ref:spi_wrapper:1.0",
+        "xci_name": "dispay_driver_bd_spi_wrapper_0_0",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "spi_wrapper",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "reset",
+                "value_src": "constant"
+              },
+              "CLK_DOMAIN": {
+                "value": "dispay_driver_bd_clk",
+                "value_src": "default_prop"
+              },
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
+              }
+            }
+          },
+          "miso": {
+            "direction": "I"
+          },
+          "mosi": {
+            "direction": "O"
+          },
+          "scl": {
+            "direction": "O"
+          },
+          "csx": {
+            "direction": "O"
+          },
+          "dcx": {
+            "direction": "O"
+          },
+          "wr": {
+            "direction": "I"
+          },
+          "data_i": {
+            "direction": "I",
+            "left": "8",
+            "right": "0"
+          },
+          "rd": {
+            "direction": "I"
+          },
+          "data_o": {
+            "direction": "O",
+            "left": "8",
+            "right": "0"
+          },
+          "fifo_full": {
+            "direction": "O"
+          },
+          "fifo_empty": {
+            "direction": "O"
+          },
+          "reset": {
+            "type": "rst",
+            "direction": "I"
+          }
+        }
+      }
+    },
+    "nets": {
+      "display_driver_wrapp_0_display_spi_write": {
+        "ports": [
+          "display_driver_wrapp_0/display_spi_write",
+          "spi_wrapper_0/wr"
+        ]
+      },
+      "display_driver_wrapp_0_display_spi_data": {
+        "ports": [
+          "display_driver_wrapp_0/display_spi_data",
+          "spi_wrapper_0/data_i"
+        ]
+      },
+      "spi_wrapper_0_fifo_full": {
+        "ports": [
+          "spi_wrapper_0/fifo_full",
+          "display_driver_wrapp_0/spi_display_tx_fifo_full"
+        ]
+      },
+      "spi_wrapper_0_fifo_empty": {
+        "ports": [
+          "spi_wrapper_0/fifo_empty",
+          "display_driver_wrapp_0/spi_display_tx_fifo_empty"
+        ]
+      },
+      "clk_1": {
+        "ports": [
+          "clk",
+          "display_driver_wrapp_0/axis_display_clk_i",
+          "spi_wrapper_0/clk"
+        ]
+      },
+      "spi_wrapper_0_mosi": {
+        "ports": [
+          "spi_wrapper_0/mosi",
+          "mosi"
+        ]
+      },
+      "spi_wrapper_0_scl": {
+        "ports": [
+          "spi_wrapper_0/scl",
+          "scl"
+        ]
+      },
+      "spi_wrapper_0_csx": {
+        "ports": [
+          "spi_wrapper_0/csx",
+          "csx"
+        ]
+      },
+      "spi_wrapper_0_dcx": {
+        "ports": [
+          "spi_wrapper_0/dcx",
+          "dcx"
+        ]
+      },
+      "reset_0_1": {
+        "ports": [
+          "reset",
+          "display_driver_wrapp_0/reset",
+          "spi_wrapper_0/reset"
+        ]
+      },
+      "axis_display_pixel_0_1": {
+        "ports": [
+          "axis_display_pixel",
+          "display_driver_wrapp_0/axis_display_pixel"
+        ]
+      },
+      "axis_display_valid_0_1": {
+        "ports": [
+          "axis_display_valid",
+          "display_driver_wrapp_0/axis_display_valid"
+        ]
+      },
+      "display_driver_wrapp_0_display_axis_ready": {
+        "ports": [
+          "display_driver_wrapp_0/display_axis_ready",
+          "display_axis_ready"
+        ]
+      },
+      "display_driver_wrapp_0_display_axis_frame_ready": {
+        "ports": [
+          "display_driver_wrapp_0/display_axis_frame_ready",
+          "display_axis_frame_ready"
+        ]
+      }
+    }
+  }
+}

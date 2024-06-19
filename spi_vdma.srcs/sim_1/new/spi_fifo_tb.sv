@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 04.06.2024 14:49:31
-// Design Name: 
+// Design Name:
 // Module Name: spi_fifo_tb
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 `define DATA_WIDTH 9
 
@@ -28,15 +28,15 @@ endtask
 
 // read data without writing fifo (read empty fifo)
 program tests(
-    input [`DATA_WIDTH-1:0] data_i,
-    output reg [`DATA_WIDTH-1:0] data_o,
-    input empty,
-    input full,
-    
-    output reg read,
-    output reg write,
-    output reg reset
-);
+        input [`DATA_WIDTH-1:0] data_i,
+        output reg [`DATA_WIDTH-1:0] data_o,
+        input empty,
+        input full,
+
+        output reg read,
+        output reg write,
+        output reg reset
+    );
     initial begin
         // 1;
         read <= '0;
@@ -46,9 +46,11 @@ program tests(
         #10;
         read = '1;
         assert (empty == '1 && full == '0)
-        else   $display("Wrong FIFO flags");
+               else
+                   $display("Wrong FIFO flags");
         assert (data_o == {`DATA_WIDTH{'0}})
-        else   $display("Wrong FIFO output data");
+               else
+                   $display("Wrong FIFO output data");
         #10;
         // 2.
         reset <= '0;
@@ -60,7 +62,7 @@ program tests(
         data_o <= {'1, 8'had};
         #10;
         write <= '0;
-        read <= '1; 
+        read <= '1;
         #10;
         // 3.
         reset <= '0;
@@ -110,8 +112,8 @@ module spi_fifo_tb();
     reg full;
     reg empty;
     reg reset;
-    
-    initial begin 
+
+    initial begin
         clk = 0;
         data_o = 0;
         data_i = 0;
@@ -121,36 +123,36 @@ module spi_fifo_tb();
         empty = 0;
         reset = 0;
     end
-    
+
     always begin
         #5;
         clk = ~clk;
     end
 
     fifo #(
-        .DATA_WIDTH(9),
-        .DEPTH(4)
-    )
-    dut
-    (
-        .clk(clk),
-        .data_o(data_o),
-        .read(read),
-        .data_i(data_i),
-        .write(write),
-        .full(full),
-        .empty(empty),
-        .reset(reset)
-    ); 
-    
+             .DATA_WIDTH(9),
+             .DEPTH(4)
+         )
+         dut
+         (
+             .clk(clk),
+             .data_o(data_o),
+             .read(read),
+             .data_i(data_i),
+             .write(write),
+             .full(full),
+             .empty(empty),
+             .reset(reset)
+         );
+
     tests test(
-    .data_i(data_o),
-    .data_o(data_i),
-    .empty(empty),
-    .full(full),
-    .read(read),
-    .write(write),
-    .reset(reset)
-    );
+              .data_i(data_o),
+              .data_o(data_i),
+              .empty(empty),
+              .full(full),
+              .read(read),
+              .write(write),
+              .reset(reset)
+          );
 
 endmodule

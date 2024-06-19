@@ -53,7 +53,6 @@ module display_driver_tb();
         axis_display_clk_i <= '0;
         spi_display_tx_fifo_empty <= '0;
         spi_display_tx_fifo_full <= '1;
-        display_spi_write <= '0;
         display_spi_data <= '0;
         reset <= '0;
         #100;

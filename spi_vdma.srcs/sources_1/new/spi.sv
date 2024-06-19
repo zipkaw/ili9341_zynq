@@ -1,64 +1,69 @@
-typedef enum {IDLE, PRE_WRITE, WRITE_BIT, BIT_TRANSACTION_READY} spi_write_states_t;
+typedef enum
+        {IDLE, PRE_WRITE, WRITE_BIT, BIT_TRANSACTION_READY} spi_write_states_t;
 
 module spi
-#(
-    parameter  SCL_CLK_HALF_PERIOD =    5,
-    localparam DATA_WIDTH =             9,
-    localparam DCX_OFFSET =             DATA_WIDTH - 1,
-    localparam PAYLOAD_OFFSET =         0,
-    localparam MOSI_DELAY =             SCL_CLK_HALF_PERIOD*2,
-    localparam MOSI_BITS_CNT =          8
-)
-(
-    input                               clk,
-                
-    input                               miso,
-    output                              mosi, // not used right now
-    output                              scl,
-    output                              csx, // chip select 10th bit of packet
-    output                              dcx, // data command selector 9th bit of packet
-    
-    input                               wr,
-    input [DATA_WIDTH-1:0]              data_i,
-    
-    input                               rd, // not used right now
-    output [DATA_WIDTH-1:0]             data_o, // not used right now
-    
-    input                               reset
-);
+    #(
+         parameter  SCL_CLK_HALF_PERIOD =    5,
+         localparam DATA_WIDTH =             9,
+         localparam DCX_OFFSET =             DATA_WIDTH - 1,
+         localparam PAYLOAD_OFFSET =         0,
+         localparam MOSI_DELAY =             SCL_CLK_HALF_PERIOD*2,
+         localparam MOSI_BITS_CNT =          8
+     )
+     (
+         input                               clk,
+
+         input                               miso,
+         output                              mosi, // not used right now
+         output                              scl,
+         output                              csx, // chip select 10th bit of packet
+         output                              dcx, // data command selector 9th bit of packet
+
+         input                               wr,
+         input [DATA_WIDTH-1:0]              data_i,
+
+         input                               rd, // not used right now
+         output [DATA_WIDTH-1:0]             data_o, // not used right now
+
+         output                              fifo_full,
+         output                              fifo_empty,
+
+         input                               reset
+     );
 
     spi_write_states_t w_state, w_next_state;
-    
-    logic scl_enable, read; 
+
+    logic scl_enable, read;
     logic                        empty;
-    logic [DATA_WIDTH - 1:0]     tx_fifo_data_o, srr; 
+    logic [DATA_WIDTH - 1:0]     tx_fifo_data_o, srr;
     logic [$clog2(MOSI_BITS_CNT)-1:0]  transmitted_byte_idx;
     logic mosi_bit_was_send;
     shortint setup_count = 0;
     shortint hold_count = 0;
-    
+
     scl_generator #(
-        .HALF_PER_DIV_PARAM(SCL_CLK_HALF_PERIOD)
-    )scl_gen(
-        .clk(clk),
-        .reset(reset),
-        .enable(scl_enable),
-        .scl(scl)
-    );
-    
+                      .HALF_PER_DIV_PARAM(SCL_CLK_HALF_PERIOD)
+                  )scl_gen(
+                      .clk(clk),
+                      .reset(reset),
+                      .enable(scl_enable),
+                      .scl(scl)
+                  );
+
     fifo #(
-        .DATA_WIDTH(DATA_WIDTH),
-        .DEPTH(3)
-    ) tx_fifo(
-        .clk(clk),
-        .data_o(tx_fifo_data_o),
-        .read(read),
-        .data_i(data_i),
-        .write(wr),
-        .empty(empty),
-        .reset(reset)
-    );
-   
+             .DATA_WIDTH(DATA_WIDTH),
+             .DEPTH(3)
+         ) tx_fifo(
+             .clk(clk),
+             .data_o(tx_fifo_data_o),
+             .read(read),
+             .data_i(data_i),
+             .write(wr),
+             .full(fifo_full),
+             .empty(fifo_empty),
+             .reset(reset)
+         );
+
     always_ff @(posedge clk or negedge reset) begin : write_sequental_states_storage
         if (!reset) begin
             w_state <= IDLE;
@@ -67,13 +72,14 @@ module spi
             w_state <= w_next_state;
         end
     end
-    
+
     always_comb begin : write_combinational_state_transitions
         case (w_state)
             IDLE: begin
                 if (!empty) begin
                     w_next_state = PRE_WRITE;
-                end else begin
+                end
+                else begin
                     w_next_state = IDLE; // @loopback
                 end
             end
@@ -83,9 +89,11 @@ module spi
             WRITE_BIT: begin
                 if (transmitted_byte_idx == '1 && hold_count >= MOSI_DELAY-1) begin
                     w_next_state = IDLE;
-                end else if (transmitted_byte_idx < MOSI_BITS_CNT && hold_count >= MOSI_DELAY-1) begin
+                end
+                else if (transmitted_byte_idx < MOSI_BITS_CNT && hold_count >= MOSI_DELAY-1) begin
                     w_next_state = BIT_TRANSACTION_READY;
-                end else begin
+                end
+                else begin
                     w_next_state = WRITE_BIT; // @loopback
                 end
             end
@@ -93,27 +101,28 @@ module spi
                 w_next_state = WRITE_BIT;
             end
             default: begin
-                w_next_state = IDLE; 
+                w_next_state = IDLE;
             end
         endcase
     end
-    
+
     always_ff @(negedge scl or negedge reset) begin : write_transmitted_byte_counting
         if (!reset) begin
             transmitted_byte_idx <= '0;
         end
         else begin
             transmitted_byte_idx <= transmitted_byte_idx + 1'b1;
-        end    
-    end 
-       
+        end
+    end
+
     always_comb begin : write_combinational_output
         case (w_state)
             IDLE: begin
                 if (!empty) begin
                     scl_enable = '0;
                     read = '1;
-                end else begin
+                end
+                else begin
                     scl_enable = '0;
                     read = '0;
                 end
@@ -136,7 +145,7 @@ module spi
             end
         endcase
     end
-    
+
     always_ff @(posedge clk) begin : write_sequental_output
         case (w_next_state)
             IDLE: begin
@@ -150,17 +159,18 @@ module spi
             end
         endcase
     end
-    
+
     always_ff @(negedge clk) begin : shift_right_register
         if(w_state == PRE_WRITE) begin
             srr <= tx_fifo_data_o;
-        end else if(scl_enable && w_state == WRITE_BIT && hold_count >= MOSI_DELAY-1) begin
+        end
+        else if(scl_enable && w_state == WRITE_BIT && hold_count >= MOSI_DELAY-1) begin
             srr <= {1'b0, srr[DATA_WIDTH - 1:1]};
         end
     end
-    
+
     assign {dcx, csx} = {tx_fifo_data_o[DCX_OFFSET], 1'b0};
 
     assign mosi = srr[0];
-    
+
 endmodule

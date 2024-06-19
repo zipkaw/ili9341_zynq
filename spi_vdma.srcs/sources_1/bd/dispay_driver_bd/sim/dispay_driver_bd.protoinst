@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"dispay_driver_bd": {
+			"proto_instances": {
+			}
+		}
+	}
+}

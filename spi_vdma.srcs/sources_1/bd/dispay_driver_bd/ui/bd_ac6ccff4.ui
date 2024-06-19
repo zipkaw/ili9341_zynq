@@ -1,0 +1,38 @@
+{
+   "ActiveEmotionalView":"Default View",
+   "Default View_ScaleFactor":"0.832682",
+   "Default View_TopLeft":"-313,-61",
+   "ExpandedHierarchyInLayout":"",
+   "guistr":"# # String gsaved with Nlview 7.0r6  2020-01-29 bk=1.5227 VDI=41 GEI=36 GUI=JA:9.0 non-TLS
+#  -string -flagsOSRD
+preplace port clk -pg 1 -lvl 0 -x -120 -y 130 -defaultsOSRD
+preplace port mosi -pg 1 -lvl 3 -x 760 -y 60 -defaultsOSRD
+preplace port scl -pg 1 -lvl 3 -x 760 -y 90 -defaultsOSRD
+preplace port csx -pg 1 -lvl 3 -x 760 -y 160 -defaultsOSRD
+preplace port dcx -pg 1 -lvl 3 -x 760 -y 190 -defaultsOSRD
+preplace port reset -pg 1 -lvl 0 -x -120 -y 180 -defaultsOSRD
+preplace port axis_display_valid -pg 1 -lvl 0 -x -120 -y 100 -defaultsOSRD
+preplace port display_axis_ready -pg 1 -lvl 3 -x 760 -y 30 -defaultsOSRD
+preplace port display_axis_frame_ready -pg 1 -lvl 3 -x 760 -y 120 -defaultsOSRD
+preplace portBus axis_display_pixel -pg 1 -lvl 0 -x -120 -y 60 -defaultsOSRD
+preplace inst display_driver_wrapp_0 -pg 1 -lvl 1 -x 130 -y 130 -defaultsOSRD
+preplace inst spi_wrapper_0 -pg 1 -lvl 2 -x 580 -y 150 -defaultsOSRD
+preplace netloc display_driver_wrapp_0_display_spi_write 1 1 1 N 140
+preplace netloc display_driver_wrapp_0_display_spi_data 1 1 1 N 160
+preplace netloc spi_wrapper_0_fifo_full 1 0 3 -70 10 NJ 10 700
+preplace netloc spi_wrapper_0_fifo_empty 1 0 3 -80 0 NJ 0 710
+preplace netloc clk_1 1 0 2 -90 240 350
+preplace netloc spi_wrapper_0_mosi 1 2 1 720 60n
+preplace netloc spi_wrapper_0_scl 1 2 1 730 90n
+preplace netloc spi_wrapper_0_csx 1 2 1 740 130n
+preplace netloc spi_wrapper_0_dcx 1 2 1 720 150n
+preplace netloc reset_0_1 1 0 2 -100 250 360
+preplace netloc axis_display_pixel_0_1 1 0 1 -90 60n
+preplace netloc axis_display_valid_0_1 1 0 1 N 100
+preplace netloc display_driver_wrapp_0_display_axis_ready 1 1 2 340J 30 NJ
+preplace netloc display_driver_wrapp_0_display_axis_frame_ready 1 1 2 330J 20 740J
+levelinfo -pg 1 -120 130 580 760
+pagesize -pg 1 -db -bbox -sgen -320 -200 970 270
+"
+}
+
