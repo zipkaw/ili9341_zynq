@@ -115,10 +115,14 @@ module display_driver
                         pw_write_req <= '0;
                         pw_in_progress <= '0;
                     end else begin
-                        pw_state <= SW_RESET;
-                        pw_command_count <= `TOTAL_PW_ON_PACKETS_NUM - 1;
-                        pw_in_progress <= '1;
-                        pw_write_req <= '1;
+                        if (!spi_display_tx_fifo_full) begin
+                            pw_state <= SW_RESET;
+                            pw_command_count <= `TOTAL_PW_ON_PACKETS_NUM - 1;
+                            pw_in_progress <= '1;
+                            pw_write_req <= '1;
+                        end else begin
+                            pw_state <= IDLE_PW;
+                        end
                     end
                 end
                 SW_RESET: begin
@@ -150,11 +154,15 @@ module display_driver
                         pw_sleep_en <= '1;
                         pw_state <= WAKEUP;
                     end else begin
-                        pw_write_req <= '1;
-                        pw_command_count <= pw_command_count - 1'b1;
-                        pw_sleep_en <= '0;
-                        pw_on <= `ON;
-                        pw_state <= IDLE_PW;
+                        if (!spi_display_tx_fifo_full) begin
+                            pw_write_req <= '1;
+                            pw_command_count <= pw_command_count - 1'b1;
+                            pw_sleep_en <= '0;
+                            pw_on <= `ON;
+                            pw_state <= IDLE_PW;
+                        end else begin 
+                            pw_state <= WAKEUP;
+                        end;
                     end
                 end
                 default: begin
