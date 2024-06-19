@@ -5,7 +5,7 @@
 `define OFF '0
 
 typedef enum {IDLE_WRITE, READ_PIXEL, WRITE_1B_SPI, WRITE_2B_SPI} display_w_states;
-typedef enum {IDLE_PW, POWER_ON} display_pw_states;
+typedef enum {IDLE_PW, SW_RESET, POWER_ON, WAKEUP} display_pw_states;
 
 module display_driver
 #(
@@ -31,10 +31,8 @@ module display_driver
     output                              display_spi_write, // mux
     output [DATA_WIDTH-1:0]             display_spi_data, // mux
     
-    input reset
-);  
-
-    
+    input                               reset
+);
     // conver 24-bit channel to 16-bit, using 5:6:5(RGB) schema
     task bitChannleConverter(input [INPUT_COLOR_DEPTH-1:0] fullColorPixel, output [DISPLAY_COLOR_DEPTH-1:0] convertedPixel);
         convertedPixel= {
@@ -54,9 +52,12 @@ module display_driver
     logic [DISPLAY_COLOR_DEPTH-1:0] output_pixel;
     
     // power control states/regs
-    bit pw_on = `OFF;
+    bit pw_on, pw_in_progress;
     display_pw_states pw_state;
     int unsigned pw_command_count;
+    bit pw_sleep_en;
+    int unsigned pw_sleep_count;
+    
     
     // fifo regs/nets
     logic [INPUT_COLOR_DEPTH-1:0] dfifo_o;
@@ -64,9 +65,10 @@ module display_driver
     logic fifo_empty;
     logic fifo_full;
  
-    logic [DATA_WIDTH-1:0] POWER_ON_COMMANDS [0:`TOTAL_PW_ON_PACKETS_NUM-1] =
+    logic [DATA_WIDTH-1:0] POWER_ON_COMMANDS [`TOTAL_PW_ON_PACKETS_NUM-1:0] =
     '{
-        `DISPLAY_FUNCTION_CONTROL,
+        `SW_RESET,
+        `POWER_CONTROL_B,
         `POWER_ON_SECUENCE_CONTROL,
         `PUMP_RATIO_CONTROL,
         `DRIVER_TIMING_CONTROL_B,
@@ -98,32 +100,60 @@ module display_driver
         .reset(reset)
     );
     
-    assign display_axis_ready = !fifo_full;
+    assign display_axis_ready = !fifo_full && pw_on == `ON;
     
-    always_ff @(posedge axis_display_clk_i or negedge reset) begin
+    always_ff @( negedge axis_display_clk_i or negedge reset ) begin : power_FSM
         if (!reset) begin
             pw_state <= IDLE_PW;
+            pw_on <= `OFF;
+            pw_in_progress <= '0;
         end else begin
             case(pw_state)
                 IDLE_PW: begin
                     if(pw_on == `ON) begin
                         pw_state <= IDLE_PW;
                         pw_write_req <= '0;
+                        pw_in_progress <= '0;
                     end else begin
-                        pw_state <= POWER_ON;
-                        pw_write_req <= '1;
+                        pw_state <= SW_RESET;
                         pw_command_count <= `TOTAL_PW_ON_PACKETS_NUM - 1;
+                        pw_in_progress <= '1;
+                        pw_write_req <= '1;
+                    end
+                end
+                SW_RESET: begin
+                    pw_write_req <= '0;
+                    if(pw_sleep_count != 0) begin
+                        pw_sleep_en <= '1;
+                        pw_state <= SW_RESET;
+                    end else begin
+                        pw_sleep_en <= '0;
+                        pw_state <= POWER_ON;
                     end
                 end
                 POWER_ON: begin
-                    if(pw_command_count != '0) begin
-                        // state outputs
-                        pw_command_count <= pw_command_count - 1'b1;
-                        pw_data_out <= POWER_ON_COMMANDS[pw_command_count];
-                        pw_state <= POWER_ON;
+                    pw_write_req <= '1;
+                    if(pw_command_count != 1'b1) begin
+                        if (!spi_display_tx_fifo_full) begin
+                            pw_command_count <= pw_command_count - 1'b1;
+                            pw_state <= POWER_ON;
+                        end else begin
+                            pw_state <= POWER_ON;
+                        end
                     end else begin
-                        pw_on <= `ON;
                         pw_write_req <= '0;
+                        pw_state <= WAKEUP;
+                    end
+                end
+                WAKEUP: begin
+                    if(pw_sleep_count != 0) begin
+                        pw_sleep_en <= '1;
+                        pw_state <= WAKEUP;
+                    end else begin
+                        pw_write_req <= '1;
+                        pw_command_count <= pw_command_count - 1'b1;
+                        pw_sleep_en <= '0;
+                        pw_on <= `ON;
                         pw_state <= IDLE_PW;
                     end
                 end
@@ -134,19 +164,30 @@ module display_driver
         end
     end
     
-    always_ff @(posedge axis_display_clk_i or negedge reset) begin
+    always_ff @( negedge axis_display_clk_i or negedge reset ) begin : sleep_delay_block
+        if (!reset) begin
+            pw_sleep_count <= `WAKEUP_DELAY_100MHZ;
+        end else begin
+            if(pw_sleep_en) pw_sleep_count <= pw_sleep_count - 1'b1;
+            else pw_sleep_count <= `WAKEUP_DELAY_100MHZ;
+        end
+    end
+    
+    always_ff @( negedge axis_display_clk_i or negedge reset ) begin : write_pixel_FSM
         if (!reset) begin
             w_state <= IDLE_WRITE;
         end else begin
             case (w_state)
                 IDLE_WRITE: begin
-                    if (!fifo_empty) begin
+                    if (!fifo_empty && pw_on == `ON) begin
                         fifo_read <= '1;
                         w_write_req <= '0;
                         
                         w_state <= READ_PIXEL;
                     end else begin // @loopback
                         w_state <= IDLE_WRITE;
+                        fifo_read <= '0;
+                        w_write_req <= '0;
                     end
                 end
                 READ_PIXEL: begin
@@ -157,6 +198,7 @@ module display_driver
                     // next state
                     if (!spi_display_tx_fifo_full) begin
                         w_write_req <= '1;
+                        w_data_out <= {1'b1, output_pixel[7:0]};
                         w_state <= WRITE_1B_SPI;
                     end else begin // @loopback
                         w_write_req <= '0;
@@ -164,15 +206,12 @@ module display_driver
                     end
                 end
                 WRITE_1B_SPI: begin
-                    // state outputs
-                    w_data_out <= {1'b1, output_pixel[7:0]};
-                      
                     // next state
+                    w_data_out <= {1'b1, output_pixel[15:8]};
                     w_state <= WRITE_2B_SPI;
                 end
                 WRITE_2B_SPI: begin
                     // state outputss
-                    w_data_out <= {1'b1, output_pixel[15:8]};
                     w_write_req <= '0;
                     
                     // next state
@@ -187,7 +226,7 @@ module display_driver
         end
     end
     
-    assign display_spi_data = (pw_state == POWER_ON) ? pw_data_out : w_data_out;
-    assign display_spi_write = (pw_state == POWER_ON) ? pw_write_req : w_write_req;
+    assign display_spi_data = (pw_in_progress) ? POWER_ON_COMMANDS[pw_command_count] : w_data_out;
+    assign display_spi_write = (pw_in_progress) ? pw_write_req : w_write_req;
     
 endmodule

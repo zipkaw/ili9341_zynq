@@ -127,7 +127,7 @@ module spi_fifo_tb();
         clk = ~clk;
     end
 
-    spi_fifo #(
+    fifo #(
         .DATA_WIDTH(9),
         .DEPTH(4)
     )

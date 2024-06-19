@@ -20,7 +20,7 @@ module fifo
 );
     
     logic [PTR_WITDH-1:0] wr_ptr, rd_ptr;
-    logic [DATA_WIDTH-1:0] fifo_buff[DEPTH];
+    logic [DATA_WIDTH-1:0] fifo_buff[DEPTH-1:0];
     integer fifo_capacity;
     
     always_ff @(posedge clk or negedge reset) begin 
@@ -28,17 +28,22 @@ module fifo
             wr_ptr <= '0;
             rd_ptr <= '0;
             fifo_capacity <= '0;
-            data_o <= '0;
         end else begin
             if (write && !full) begin
                 fifo_buff[wr_ptr] <= data_i;
                 wr_ptr = wr_ptr + 1'b1;
-                fifo_capacity = fifo_capacity + 1'b1;
+                if (wr_ptr == DEPTH) begin
+                    wr_ptr = 0;
+                end
+                fifo_capacity <= fifo_capacity + 1'b1;
             end
             if (read && !empty) begin
                 data_o <= fifo_buff[rd_ptr];
                 rd_ptr = rd_ptr + 1'b1;
-                fifo_capacity = fifo_capacity - 1'b1;
+                if (rd_ptr == DEPTH) begin
+                    rd_ptr = 0;
+                end
+                fifo_capacity <= fifo_capacity - 1'b1;
             end
         end
     end
