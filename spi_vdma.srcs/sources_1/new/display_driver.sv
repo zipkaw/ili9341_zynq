@@ -28,8 +28,8 @@ module display_driver
          // display <--> spi interface
          input                               spi_display_tx_fifo_empty,
          input                               spi_display_tx_fifo_full,
-         output                              display_spi_write, // mux
-         output [DATA_WIDTH-1:0]             display_spi_data, // mux
+         output logic                        display_spi_write, // mux
+         output logic [DATA_WIDTH-1:0]       display_spi_data, // mux
 
          input                               reset
      );
@@ -163,7 +163,7 @@ module display_driver
                     else begin
                         if (!spi_display_tx_fifo_full) begin
                             pw_write_req <= '1;
-                            pw_command_count <= pw_command_count - 1'b1;
+                            pw_command_count <= '0;
                             pw_sleep_en <= '0;
                             pw_on <= `ON;
                             pw_state <= IDLE_PW;
@@ -199,10 +199,9 @@ module display_driver
         else begin
             case (w_state)
                 IDLE_WRITE: begin
-                    if (!fifo_empty && pw_on == `ON) begin
+                    if (!fifo_empty && !pw_in_progress) begin
                         fifo_read <= '1;
                         w_write_req <= '0;
-
                         w_state <= READ_PIXEL;
                     end
                     else begin // @loopback
@@ -213,8 +212,8 @@ module display_driver
                 end
                 READ_PIXEL: begin
                     // state outputs
-                    fifo_read <= '0;
                     bitChannleConverter(dfifo_o[INPUT_COLOR_DEPTH-1:0], output_pixel[DISPLAY_COLOR_DEPTH-1:0]);
+                    fifo_read <= '0;
 
                     // next state
                     if (!spi_display_tx_fifo_full) begin
@@ -229,6 +228,7 @@ module display_driver
                 end
                 WRITE_1B_SPI: begin
                     // next state
+                    w_write_req <= '1;
                     w_data_out <= {1'b1, output_pixel[15:8]};
                     w_state <= WRITE_2B_SPI;
                 end
@@ -250,7 +250,15 @@ module display_driver
         end
     end
 
-    assign display_spi_data = (pw_in_progress) ? POWER_ON_COMMANDS[pw_command_count] : w_data_out;
-    assign display_spi_write = (pw_in_progress) ? pw_write_req : w_write_req;
+    always_ff @( negedge axis_display_clk_i ) begin : write_sequental_output
+        if (pw_in_progress) begin
+            display_spi_data <= POWER_ON_COMMANDS[pw_command_count];
+            display_spi_write <= pw_write_req;
+        end
+        else begin
+            display_spi_data <= w_data_out;
+            display_spi_write <= w_write_req;
+        end
+    end
 
 endmodule

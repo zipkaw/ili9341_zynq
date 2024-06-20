@@ -34,7 +34,6 @@ module spi
     spi_write_states_t w_state, w_next_state;
 
     logic scl_enable, read;
-    logic                        empty;
     logic [DATA_WIDTH - 1:0]     tx_fifo_data_o, srr;
     logic [$clog2(MOSI_BITS_CNT)-1:0]  transmitted_byte_idx;
     logic mosi_bit_was_send;
@@ -76,7 +75,7 @@ module spi
     always_comb begin : write_combinational_state_transitions
         case (w_state)
             IDLE: begin
-                if (!empty) begin
+                if (!fifo_empty) begin
                     w_next_state = PRE_WRITE;
                 end
                 else begin
@@ -118,9 +117,9 @@ module spi
     always_comb begin : write_combinational_output
         case (w_state)
             IDLE: begin
-                if (!empty) begin
+                if (!fifo_empty) begin
                     scl_enable = '0;
-                    read = '1;
+                    read = '0;
                 end
                 else begin
                     scl_enable = '0;
@@ -132,8 +131,14 @@ module spi
                 read = '0;
             end
             WRITE_BIT: begin
-                scl_enable = '1;
-                read = '0;
+                if (w_next_state == IDLE) begin
+                    scl_enable = '1;
+                    read = '1;
+                end
+                else begin
+                    scl_enable = '1;
+                    read = '0;
+                end
             end
             BIT_TRANSACTION_READY: begin
                 scl_enable = '1;

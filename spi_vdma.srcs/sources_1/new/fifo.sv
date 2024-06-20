@@ -39,7 +39,7 @@ module fifo
                 fifo_capacity <= fifo_capacity + 1'b1;
             end
             if (read && !empty) begin
-                data_o <= fifo_buff[rd_ptr];
+                // data_o <= fifo_buff[rd_ptr];
                 rd_ptr = rd_ptr + 1'b1;
                 if (rd_ptr == DEPTH) begin
                     rd_ptr = 0;
@@ -48,6 +48,8 @@ module fifo
             end
         end
     end
+
+    assign data_o = fifo_buff[rd_ptr];
 
     always_comb begin
         if (!reset) begin

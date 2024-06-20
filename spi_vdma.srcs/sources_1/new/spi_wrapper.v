@@ -22,16 +22,14 @@ module spi_wrapper(
     output                              csx; // chip select 10th bit of packet
     output                              dcx; // data command selector 9th bit of packet
     input                               wr;
-    input [DATA_WIDTH-1:0]              data_i;
+    input [8:0]                         data_i;
     input                               rd; // not used right now
-    output [DATA_WIDTH-1:0]             data_o; // not used right now
+    output [8:0]                        data_o; // not used right now
     output                              fifo_full;
     output                              fifo_empty;
     input                               reset;
 
-    parameter DATA_WIDTH = 9;
-
-    spi #(.DATA_WIDTH(DATA_WIDTH))spi_wrapped(
+    spi spi_wrapped(
             .clk(clk),
             .miso(miso),
             .mosi(mosi),
