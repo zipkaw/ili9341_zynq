@@ -15,8 +15,8 @@ preplace port axis_display_valid -pg 1 -lvl 0 -x -130 -y 100 -defaultsOSRD
 preplace port display_axis_ready -pg 1 -lvl 3 -x 770 -y 30 -defaultsOSRD
 preplace port display_axis_frame_ready -pg 1 -lvl 3 -x 770 -y 120 -defaultsOSRD
 preplace portBus axis_display_pixel -pg 1 -lvl 0 -x -130 -y 60 -defaultsOSRD
-preplace inst display_driver_wrapp_0 -pg 1 -lvl 1 -x 130 -y 130 -defaultsOSRD
 preplace inst spi_wrapper_0 -pg 1 -lvl 2 -x 580 -y 150 -defaultsOSRD
+preplace inst display_driver_wrapp_0 -pg 1 -lvl 1 -x 130 -y 130 -defaultsOSRD
 preplace netloc display_driver_wrapp_0_display_spi_write 1 1 1 N 140
 preplace netloc display_driver_wrapp_0_display_spi_data 1 1 1 N 160
 preplace netloc spi_wrapper_0_fifo_full 1 0 3 -80 10 NJ 10 700

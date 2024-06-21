@@ -6,40 +6,19 @@
       "name": "dispay_driver_bd",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "None",
-      "tool_version": "2020.1",
-      "validated": "true"
+      "tool_version": "2020.1"
     },
     "design_tree": {
-      "display_driver_wrapp_0": "",
-      "spi_wrapper_0": ""
+      "spi_wrapper_0": "",
+      "display_driver_wrapp_0": ""
     },
     "ports": {
       "clk": {
         "type": "clk",
         "direction": "I",
         "parameters": {
-          "ASSOCIATED_RESET": {
-            "value": "reset",
-            "value_src": "default"
-          },
-          "CLK_DOMAIN": {
-            "value": "dispay_driver_bd_clk",
-            "value_src": "default"
-          },
           "FREQ_HZ": {
             "value": "100000000"
-          },
-          "FREQ_TOLERANCE_HZ": {
-            "value": "0",
-            "value_src": "default"
-          },
-          "INSERT_VIP": {
-            "value": "0",
-            "value_src": "default"
-          },
-          "PHASE": {
-            "value": "0.000",
-            "value_src": "default"
           }
         }
       },
@@ -57,17 +36,7 @@
       },
       "reset": {
         "type": "rst",
-        "direction": "I",
-        "parameters": {
-          "INSERT_VIP": {
-            "value": "0",
-            "value_src": "default"
-          },
-          "POLARITY": {
-            "value": "ACTIVE_LOW",
-            "value_src": "default"
-          }
-        }
+        "direction": "I"
       },
       "axis_display_pixel": {
         "direction": "I",
@@ -85,66 +54,6 @@
       }
     },
     "components": {
-      "display_driver_wrapp_0": {
-        "vlnv": "xilinx.com:module_ref:display_driver_wrapper:1.0",
-        "xci_name": "dispay_driver_bd_display_driver_wrapp_0_0",
-        "reference_info": {
-          "ref_type": "hdl",
-          "ref_name": "display_driver_wrapper",
-          "boundary_crc": "0x0"
-        },
-        "ports": {
-          "axis_display_pixel": {
-            "direction": "I",
-            "left": "23",
-            "right": "0"
-          },
-          "axis_display_valid": {
-            "direction": "I"
-          },
-          "axis_display_clk_i": {
-            "direction": "I",
-            "parameters": {
-              "CLK_DOMAIN": {
-                "value": "dispay_driver_bd_clk",
-                "value_src": "default_prop"
-              },
-              "FREQ_HZ": {
-                "value": "100000000",
-                "value_src": "user_prop"
-              },
-              "PHASE": {
-                "value": "0.000",
-                "value_src": "default_prop"
-              }
-            }
-          },
-          "display_axis_ready": {
-            "direction": "O"
-          },
-          "display_axis_frame_ready": {
-            "direction": "O"
-          },
-          "spi_display_tx_fifo_empty": {
-            "direction": "I"
-          },
-          "spi_display_tx_fifo_full": {
-            "direction": "I"
-          },
-          "display_spi_write": {
-            "direction": "O"
-          },
-          "display_spi_data": {
-            "direction": "O",
-            "left": "8",
-            "right": "0"
-          },
-          "reset": {
-            "type": "rst",
-            "direction": "I"
-          }
-        }
-      },
       "spi_wrapper_0": {
         "vlnv": "xilinx.com:module_ref:spi_wrapper:1.0",
         "xci_name": "dispay_driver_bd_spi_wrapper_0_0",
@@ -156,21 +65,7 @@
         "ports": {
           "clk": {
             "type": "clk",
-            "direction": "I",
-            "parameters": {
-              "ASSOCIATED_RESET": {
-                "value": "reset",
-                "value_src": "constant"
-              },
-              "CLK_DOMAIN": {
-                "value": "dispay_driver_bd_clk",
-                "value_src": "default_prop"
-              },
-              "FREQ_HZ": {
-                "value": "100000000",
-                "value_src": "user_prop"
-              }
-            }
+            "direction": "I"
           },
           "miso": {
             "direction": "I"
@@ -214,6 +109,52 @@
             "direction": "I"
           }
         }
+      },
+      "display_driver_wrapp_0": {
+        "vlnv": "xilinx.com:module_ref:display_driver_wrapper:1.0",
+        "xci_name": "dispay_driver_bd_display_driver_wrapp_0_0",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "display_driver_wrapper",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "axis_display_pixel": {
+            "direction": "I",
+            "left": "23",
+            "right": "0"
+          },
+          "axis_display_valid": {
+            "direction": "I"
+          },
+          "axis_display_clk_i": {
+            "direction": "I"
+          },
+          "display_axis_ready": {
+            "direction": "O"
+          },
+          "display_axis_frame_ready": {
+            "direction": "O"
+          },
+          "spi_display_tx_fifo_empty": {
+            "direction": "I"
+          },
+          "spi_display_tx_fifo_full": {
+            "direction": "I"
+          },
+          "display_spi_write": {
+            "direction": "O"
+          },
+          "display_spi_data": {
+            "direction": "O",
+            "left": "8",
+            "right": "0"
+          },
+          "reset": {
+            "type": "rst",
+            "direction": "I"
+          }
+        }
       }
     },
     "nets": {
@@ -244,8 +185,8 @@
       "clk_1": {
         "ports": [
           "clk",
-          "display_driver_wrapp_0/axis_display_clk_i",
-          "spi_wrapper_0/clk"
+          "spi_wrapper_0/clk",
+          "display_driver_wrapp_0/axis_display_clk_i"
         ]
       },
       "spi_wrapper_0_mosi": {
@@ -275,8 +216,8 @@
       "reset_0_1": {
         "ports": [
           "reset",
-          "display_driver_wrapp_0/reset",
-          "spi_wrapper_0/reset"
+          "spi_wrapper_0/reset",
+          "display_driver_wrapp_0/reset"
         ]
       },
       "axis_display_pixel_0_1": {

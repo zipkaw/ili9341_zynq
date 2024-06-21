@@ -28,23 +28,23 @@ module display_bd_tb();
             axis_tdataBus(axis_display_pixel);
         end
     end
-    
-    default clocking cb @(posedge clk);
-            endclocking
 
-            dispay_driver_bd_wrapper dut
-                                     (
-                                         .axis_display_pixel(axis_display_pixel),
-                                         .axis_display_valid(axis_display_valid),
-                                         .clk(clk),
-                                         .csx(csx),
-                                         .dcx(dcx),
-                                         .display_axis_frame_ready(display_axis_frame_ready),
-                                         .display_axis_ready(display_axis_ready),
-                                         .mosi(mosi),
-                                         .reset(reset),
-                                         .scl(scl)
-                                     );
+    default clocking cb @(posedge clk);
+            endclocking;
+
+    dispay_driver_bd_wrapper dut
+                             (
+                                 .axis_display_pixel(axis_display_pixel),
+                                 .axis_display_valid(axis_display_valid),
+                                 .clk(clk),
+                                 .csx(csx),
+                                 .dcx(dcx),
+                                 .display_axis_frame_ready(display_axis_frame_ready),
+                                 .display_axis_ready(display_axis_ready),
+                                 .mosi(mosi),
+                                 .reset(reset),
+                                 .scl(scl)
+                             );
 
     initial begin
         clk <= '0;

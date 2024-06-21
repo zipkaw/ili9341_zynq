@@ -195,6 +195,7 @@ module display_driver
     always_ff @( posedge axis_display_clk_i or negedge reset ) begin : write_pixel_FSM
         if (!reset) begin
             w_state <= IDLE_WRITE;
+            pixel_count <= '0;
         end
         else begin
             case (w_state)
@@ -203,6 +204,9 @@ module display_driver
                         fifo_read <= '1;
                         w_write_req <= '0;
                         w_state <= READ_PIXEL;
+                        if (pixel_count == TOTAL_PIXELS) begin
+                            pixel_count <= '0;
+                        end
                     end
                     else begin // @loopback
                         w_state <= IDLE_WRITE;
@@ -242,6 +246,7 @@ module display_driver
                     end
                     else begin
                         w_state <= IDLE_WRITE;
+                        pixel_count <= pixel_count + 1'b1;
                     end
                 end
                 default:
@@ -249,6 +254,8 @@ module display_driver
             endcase
         end
     end
+
+    assign display_axis_frame_ready = (pixel_count == TOTAL_PIXELS);
 
     always_ff @( negedge axis_display_clk_i ) begin : write_sequental_output
         if (pw_in_progress) begin

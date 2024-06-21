@@ -3,78 +3,76 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="display_bd_tb_behav.wdb" id="1">
+      <db_ref path="axis_vdma_frame_reader_tb_behav.wdb" id="1">
          <top_modules>
-            <top_module name="\$unit_display_driver_sv " />
-            <top_module name="\$unit_fifo_sv " />
-            <top_module name="display_bd_tb" />
+            <top_module name="axis_vdma_frame_reader_tb" />
             <top_module name="glbl" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1002753333fs"></ZoomStartTime>
-      <ZoomEndTime time="1005473334fs"></ZoomEndTime>
-      <Cursor1Time time="1005020000fs"></Cursor1Time>
+      <ZoomStartTime time="953833fs"></ZoomStartTime>
+      <ZoomEndTime time="1009234fs"></ZoomEndTime>
+      <Cursor1Time time="1000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="209"></NameColumnWidth>
-      <ValueColumnWidth column_width="75"></ValueColumnWidth>
+      <NameColumnWidth column_width="202"></NameColumnWidth>
+      <ValueColumnWidth column_width="72"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="12" />
+   <WVObjectSize size="13" />
    <wave_markers>
-      <marker time="2000000000" label="" />
+      <marker time="2156565000" label="" />
    </wave_markers>
-   <wvobject fp_name="/display_bd_tb/axis_display_pixel" type="array">
-      <obj_property name="ElementShortName">axis_display_pixel[23:0]</obj_property>
-      <obj_property name="ObjectShortName">axis_display_pixel[23:0]</obj_property>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/m_axis_mm2s_aclk" type="logic">
+      <obj_property name="ElementShortName">m_axis_mm2s_aclk</obj_property>
+      <obj_property name="ObjectShortName">m_axis_mm2s_aclk</obj_property>
    </wvobject>
-   <wvobject fp_name="/display_bd_tb/reset" type="logic">
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/m_axis_mm2s_tvalid" type="logic">
+      <obj_property name="ElementShortName">m_axis_mm2s_tvalid</obj_property>
+      <obj_property name="ObjectShortName">m_axis_mm2s_tvalid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/m_axis_mm2s_tlast" type="logic">
+      <obj_property name="ElementShortName">m_axis_mm2s_tlast</obj_property>
+      <obj_property name="ObjectShortName">m_axis_mm2s_tlast</obj_property>
+   </wvobject>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/mm2s_stream_tdata" type="array">
+      <obj_property name="ElementShortName">mm2s_stream_tdata[23:0]</obj_property>
+      <obj_property name="ObjectShortName">mm2s_stream_tdata[23:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/mm2s_stream_tkeep" type="array">
+      <obj_property name="ElementShortName">mm2s_stream_tkeep[2:0]</obj_property>
+      <obj_property name="ObjectShortName">mm2s_stream_tkeep[2:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/display_frame_ready" type="logic">
+      <obj_property name="ElementShortName">display_frame_ready</obj_property>
+      <obj_property name="ObjectShortName">display_frame_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/display_ready" type="logic">
+      <obj_property name="ElementShortName">display_ready</obj_property>
+      <obj_property name="ObjectShortName">display_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/m_axis_mm2s_tready" type="logic">
+      <obj_property name="ElementShortName">m_axis_mm2s_tready</obj_property>
+      <obj_property name="ObjectShortName">m_axis_mm2s_tready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/mm2s_fsync" type="logic">
+      <obj_property name="ElementShortName">mm2s_fsync</obj_property>
+      <obj_property name="ObjectShortName">mm2s_fsync</obj_property>
+   </wvobject>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/display_rgb" type="array">
+      <obj_property name="ElementShortName">display_rgb[23:0]</obj_property>
+      <obj_property name="ObjectShortName">display_rgb[23:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/display_valid" type="logic">
+      <obj_property name="ElementShortName">display_valid</obj_property>
+      <obj_property name="ObjectShortName">display_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/display_clk_o" type="logic">
+      <obj_property name="ElementShortName">display_clk_o</obj_property>
+      <obj_property name="ObjectShortName">display_clk_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/axis_vdma_frame_reader_tb/reset" type="logic">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
-   </wvobject>
-   <wvobject fp_name="/display_bd_tb/clk" type="logic">
-      <obj_property name="ElementShortName">clk</obj_property>
-      <obj_property name="ObjectShortName">clk</obj_property>
-   </wvobject>
-   <wvobject fp_name="/display_bd_tb/axis_display_valid" type="logic">
-      <obj_property name="ElementShortName">axis_display_valid</obj_property>
-      <obj_property name="ObjectShortName">axis_display_valid</obj_property>
-   </wvobject>
-   <wvobject fp_name="/display_bd_tb/csx" type="logic">
-      <obj_property name="ElementShortName">csx</obj_property>
-      <obj_property name="ObjectShortName">csx</obj_property>
-   </wvobject>
-   <wvobject fp_name="/display_bd_tb/dcx" type="logic">
-      <obj_property name="ElementShortName">dcx</obj_property>
-      <obj_property name="ObjectShortName">dcx</obj_property>
-   </wvobject>
-   <wvobject fp_name="/display_bd_tb/display_axis_frame_ready" type="logic">
-      <obj_property name="ElementShortName">display_axis_frame_ready</obj_property>
-      <obj_property name="ObjectShortName">display_axis_frame_ready</obj_property>
-   </wvobject>
-   <wvobject fp_name="/display_bd_tb/display_axis_ready" type="logic">
-      <obj_property name="ElementShortName">display_axis_ready</obj_property>
-      <obj_property name="ObjectShortName">display_axis_ready</obj_property>
-   </wvobject>
-   <wvobject fp_name="vbus325" type="vbus">
-      <obj_property name="label">mosi</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/display_bd_tb/mosi" type="logic">
-         <obj_property name="ElementShortName">mosi</obj_property>
-         <obj_property name="ObjectShortName">mosi</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="/display_bd_tb/scl" type="logic">
-      <obj_property name="ElementShortName">scl</obj_property>
-      <obj_property name="ObjectShortName">scl</obj_property>
-   </wvobject>
-   <wvobject fp_name="/display_bd_tb/dut/dispay_driver_bd_i/display_driver_wrapp_0/inst/display_driver_wrapped/display_spi_data" type="array">
-      <obj_property name="ElementShortName">display_spi_data[8:0]</obj_property>
-      <obj_property name="ObjectShortName">display_spi_data[8:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/display_bd_tb/dut/dispay_driver_bd_i/spi_wrapper_0/inst/spi_wrapped/tx_fifo/fifo_buff" type="array">
-      <obj_property name="ElementShortName">fifo_buff[2:0][8:0]</obj_property>
-      <obj_property name="ObjectShortName">fifo_buff[2:0][8:0]</obj_property>
    </wvobject>
 </wave_config>
